@@ -9,7 +9,16 @@ var allDigitsRegex = /^\d+$/;
   so the actual db records cannot be inadvertantly
   modified.
 */
-export default function() {
+export default function(initialData) {
+
+  this.loadData = function(data) {
+    var _this = this;
+
+    Ember.keys(data).forEach(function(collection) {
+      _this.createCollection(collection);
+      _this.insert(collection, data[collection]);
+    });
+  };
 
   this.createCollection = function(collection) {
     var _this = this;
@@ -34,15 +43,6 @@ export default function() {
 
     args.forEach(function(collection) {
       _this.createCollection(collection);
-    });
-  };
-
-  this.loadData = function(data) {
-    var _this = this;
-
-    Ember.keys(data).forEach(function(collection) {
-      _this.createCollection(collection);
-      _this.insert(collection, data[collection]);
     });
   };
 
@@ -249,5 +249,13 @@ export default function() {
 
     return records;
   };
+
+
+  /*
+    Constructor
+  */
+  if (initialData) {
+    this.loadData(initialData);
+  }
 
 }

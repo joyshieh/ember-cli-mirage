@@ -10,6 +10,15 @@ test('it can be instantiated', function(assert) {
   assert.ok(db);
 });
 
+test('it can load data on instantiation', function(assert) {
+  db = new Db({
+    users: [{id: 1, name: 'Link'}],
+    addresses: [{id: 1, name: '123 Hyrule Way'}, {id: 2, name: 'Lorem ipsum'}]
+  });
+
+  assert.equal(db.users.all().length, 1);
+  assert.equal(db.addresses.all().length, 2);
+});
 
 module('mirage:db#createCollection', {
   beforeEach: function() {
