@@ -316,7 +316,7 @@ test('it can update records by query', function(assert) {
 });
 
 test('updating a single record returns that record', function(assert) {
-  var ganon = db.contacts.update(3, {name: 'Ganondorf'});
+  var ganon = db.contacts.update({name: 'Ganondorf'}, 3);
   assert.deepEqual(ganon, {id: 3, name: 'Ganondorf', evil: true});
 });
 
@@ -325,15 +325,16 @@ test('updating a collection returns the updated records', function(assert) {
   assert.deepEqual(characters, [
     {id: 1, name: 'Link', evil: true},
     {id: 2, name: 'Zelda', evil: true},
-    {id: 3, name: 'Ganon', evil: true}
+    {id: '123-abc', name: 'Epona', evil: true}
   ]);
 });
 
 test('updating multiple records returns the updated records', function(assert) {
-  var characters = db.contacts.update({evil: false}, {evil: true});
+  var characters = db.contacts.update({evil: true}, {evil: false});
   assert.deepEqual(characters, [
     {id: 1, name: 'Link', evil: true},
-    {id: 2, name: 'Zelda', evil: true}
+    {id: 2, name: 'Zelda', evil: true},
+    {id: '123-abc', name: 'Epona', evil: true}
   ]);
 });
 

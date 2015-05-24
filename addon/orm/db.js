@@ -128,13 +128,20 @@ export default function() {
     var records;
 
     if (typeof target === 'undefined') {
+      var changedRecords = [];
       this[collection]._records.forEach(function(record) {
+        var oldRecord = _.assign({}, record);
+
         Object.keys(attrs).forEach(function(attr) {
           record[attr] = attrs[attr];
         });
+
+        if (!_.isEqual(oldRecord, record)) {
+          changedRecords.push(record);
+        }
       });
 
-      return this[collection];
+      return changedRecords;
 
     } else if (typeof target === 'number' || typeof target === 'string') {
       var id = target;
