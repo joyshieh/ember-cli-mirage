@@ -7,8 +7,7 @@ import {module, test} from 'qunit';
 var schema, link;
 module('mirage:integration:schema:belongsTo instantiating with params', {
   beforeEach: function() {
-    var db = new Db();
-    db.loadData({
+    var db = new Db({
       users: [
         {id: 1, name: 'Link'}
       ],

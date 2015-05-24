@@ -7,16 +7,13 @@ import {module, test} from 'qunit';
 var schema, db, link, zelda, address;
 module('mirage:integration:schema:belongsTo#saved-child-saved-parent', {
   beforeEach: function() {
-    db = new Db();
-    db.createCollection('users');
-    db.users.insert([
-      {id: 1, name: 'Link'},
-      {id: 2, name: 'Zelda'}
-    ]);
-    db.createCollection('addresses');
-    db.addresses.insert([
-      {id: 1, user_id: 1}
-    ]);
+    db = new Db({
+      users: [
+        {id: 1, name: 'Link'},
+        {id: 2, name: 'Zelda'}
+      ],
+      addresses: [{id: 1, user_id: 1}]
+    });
     schema = new Schema(db);
 
     var User = Model.extend();
