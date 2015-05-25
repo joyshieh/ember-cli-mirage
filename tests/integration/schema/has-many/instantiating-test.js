@@ -4,34 +4,34 @@ import Schema from 'ember-cli-mirage/orm/schema';
 import Db from 'ember-cli-mirage/orm/db';
 import {module, test} from 'qunit';
 
-var schema, link;
-module('mirage:integration:schema:belongsTo instantiating with params', {
+var schema, child1, child2;
+module('mirage:integration:schema:hasMany instantiating with params', {
   beforeEach: function() {
-    var db = new Db();
-    db.loadData({
+    var db = new Db({
       users: [],
       addresses: [
-        {id: 1, name: 'Link'}
+        {id: 1, name: '123 Hyrule Way'},
+        {id: 2, name: '12 Goron City'},
       ]
     });
     schema = new Schema(db);
 
-    var User = Model.extend();
-    var Address = Model.extend({
-      user: Mirage.belongsTo()
+    var User = Model.extend({
+      addresses: Mirage.hasMany()
     });
+    var Address = Model.extend();
 
     schema.register('user', User);
     schema.register('address', Address);
 
-    link = schema.user.find(1);
+    child1 = schema.address.find(1);
+    child2 = schema.address.find(2);
   }
 });
 
-test('the parent accepts a saved childs id', function(assert) {
-  var address = schema.address.new({user_id: 1});
+// test('the parent accepts an array of saved children ids', function(assert) {
+//   var user = schema.user.new({address_ids: [1, 2]});
 
-  assert.equal(address.user_id, 1);
-  assert.deepEqual(address.user, link);
-  assert.deepEqual(address.attrs, {user_id: 1});
-});
+//   assert.equal(user.addresses, [child1, child2]);
+//   assert.equal(user.address_ids, [1, 2]);
+// });

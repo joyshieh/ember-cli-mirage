@@ -20,11 +20,21 @@ export default Association.extend({
     var _this = this;
     var foreignKey = key + '_id';
 
-    // Define the foreign key getter/setter
     Object.defineProperty(model, foreignKey, {
+      /*
+        object.parent_id
+          - added by belongsTo
+          - returns the associated parent's id
+      */
       get: function() {
         return this.attrs[foreignKey];
       },
+
+      /*
+        object.parent_id = (parentId)
+          - added by belongsTo
+          - sets the associated parent (via id)
+      */
       set: function(val) {
         _this._tempParent = null;
         this.attrs[foreignKey] = val;
@@ -32,8 +42,12 @@ export default Association.extend({
       }
     });
 
-    // Define the relationship getter/setter
     Object.defineProperty(model, key, {
+      /*
+        object.parent
+          - added by belongsTo
+          - returns the associated parent
+      */
       get: function() {
         if (_this._tempParent) {
           return _this._tempParent;
@@ -43,6 +57,11 @@ export default Association.extend({
         return schema[relatedType].find(model[foreignKey]);
       },
 
+      /*
+        object.parent = (parentModel)
+          - added by belongsTo
+          - sets the associated parent (via model)
+      */
       set: function(newModel) {
         if (newModel && newModel.isNew()) {
           model[foreignKey] = null;
@@ -61,16 +80,26 @@ export default Association.extend({
       this._tempParent = initAttrs[key];
     }
 
-    model['create' + capitalize(key)] = function(attrs) {
-      var newModel = schema[key].create(attrs);
-      model[foreignKey] = newModel.id;
+    /*
+      object.newParent
+        - added by belongsTo
+        - creates a new unsaved associated parent
+    */
+    model['new' + capitalize(key)] = function(attrs) {
+      var newModel = schema[key].new(attrs);
+      model[key] = newModel;
 
       return newModel;
     };
 
-    model['new' + capitalize(key)] = function(attrs) {
-      var newModel = schema[key].new(attrs);
-      model[key] = newModel;
+    /*
+      object.createParent
+        - added by belongsTo
+        - creates an associated parent, persists directly to db
+    */
+    model['create' + capitalize(key)] = function(attrs) {
+      var newModel = schema[key].create(attrs);
+      model[foreignKey] = newModel.id;
 
       return newModel;
     };
