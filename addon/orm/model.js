@@ -24,7 +24,7 @@ var Model = function(schema, type, initAttrs) {
   this._discoverAssociations(initAttrs);
   this._setupAttrs(initAttrs);
   this._setupRelationships(initAttrs);
-  this._setupPlainAttributes(initAttrs);
+  this._setupPlainAttributes();
 
   return this;
 };
@@ -40,7 +40,7 @@ Model.prototype.save = function() {
     this.attrs = this._schema.db[collection].insert(this.attrs);
 
     // Ensure the id getter/setter is set
-    this.definePlainAttribute('id');
+    this._definePlainAttribute('id');
 
     // Update child models who hold a reference?
   } else {
@@ -88,10 +88,14 @@ Model.prototype.isNew = function() {
   return this.attrs.id === undefined;
 };
 
+
+
+// Private
+
 /*
   Define getter/setter for a plain attribute
 */
-Model.prototype.definePlainAttribute = function(attr) {
+Model.prototype._definePlainAttribute = function(attr) {
   if (this[attr] !== undefined) { return; }
 
   // Ensure the attribute is on the attrs hash
@@ -105,9 +109,6 @@ Model.prototype.definePlainAttribute = function(attr) {
     set: function (val) { this.attrs[attr] = val; return this; },
   });
 };
-
-
-// Private
 
 /*
   Copy this model's associations and foreign keys into a registry for later reference,
@@ -132,7 +133,7 @@ Model.prototype._discoverAssociations = function(initAttrs) {
     hash = _.assign(hash, association.getForeignKeysHash(key, initAttrs));
   });
 
-  this._foreignKeysHash = hash;
+  this._foreignKeysMap = hash;
 };
 
 /*
@@ -148,7 +149,7 @@ Model.prototype._setupAttrs = function(initAttrs) {
   var _this = this;
   var attrs = {};
 
-  initAttrs = _.assign(initAttrs, this._foreignKeysHash);
+  initAttrs = _.assign(initAttrs, this._foreignKeysMap);
 
   Object.keys(initAttrs)
     .filter(function(attr) {
@@ -169,26 +170,18 @@ Model.prototype._setupRelationships = function(initAttrs) {
   });
 };
 
-Model.prototype._setupPlainAttributes = function(attrs) {
+Model.prototype._setupPlainAttributes = function() {
   var _this = this;
-
-  this._getPlainAttributeKeys().forEach(function(attr) {
-    _this.definePlainAttribute(attr);
-  });
-};
-
-/*
-  The db field names, minus the foreign keys
-*/
-Model.prototype._getPlainAttributeKeys = function() {
   var attrs = this.attrs ? Object.keys(this.attrs) : [];
-  var foreignKeys = Object.keys(this._foreignKeysHash);
+  var foreignKeys = Object.keys(this._foreignKeysMap);
 
-  var keys = attrs.filter(function(attr) {
+  var plainKeys = attrs.filter(function(attr) {
     return foreignKeys.indexOf(attr) === -1;
   });
 
-  return keys;
+  plainKeys.forEach(function(attr) {
+    _this._definePlainAttribute(attr);
+  });
 };
 
 Model.extend = extend;
