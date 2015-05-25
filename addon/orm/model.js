@@ -19,7 +19,6 @@ var Model = function(schema, type, initAttrs) {
 
   this._schema = schema;
   this.type = type;
-  this.foreignKeys = [];
   initAttrs = initAttrs || {};
 
   this._discoverAssociations(initAttrs);
