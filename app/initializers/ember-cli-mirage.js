@@ -11,7 +11,7 @@ export default {
 
     if (_shouldUseMirage(env, ENV['ember-cli-mirage'])) {
       var modulesMap = readModules(ENV.modulePrefix);
-      var hasFactories = !Ember.isEmpty(modulesMap['factories']);
+      var hasFactories = Ember.keys(modulesMap['factories']).length > 0;
       var hasDefaultScenario = modulesMap['scenarios'].hasOwnProperty('default');
       var server = new Server({
         environment: env
